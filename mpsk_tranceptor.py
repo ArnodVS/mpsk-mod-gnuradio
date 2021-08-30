@@ -34,6 +34,9 @@ from optparse import OptionParser
 import pmt
 import sip
 import sys
+
+import os
+
 from gnuradio import qtgui
 
 
@@ -78,6 +81,11 @@ class mpsk_tranceptor(gr.top_block, Qt.QWidget):
         self.constellation = constellation = digital.constellation_calcdist((digital.psk_4()[0]), (digital.psk_4()[1]), 4, 1).base()
 
         self.arity = arity = 4
+        
+        # Se agrege el path para la ruta actual, importar os
+        self.path = path = os.getcwd()
+        self.data_sent = data_sent = path + '/data_sent'
+        self.data_received = data_received = path + '/data_received'
 
         ##################################################
         # Blocks
@@ -98,10 +106,10 @@ class mpsk_tranceptor(gr.top_block, Qt.QWidget):
         self._noise_volt_win = RangeWidget(self._noise_volt_range, self.set_noise_volt, 'Channel: Noise Voltage', "counter_slider", float)
         self.top_grid_layout.addWidget(self._noise_volt_win)
         self.qtgui_time_sink_x_0 = qtgui.time_sink_f(
-        	1024, #size
-        	samp_rate, #samp_rate
-        	"Secuencia Recibida", #name
-        	1 #number of inputs
+            1024, #size
+            samp_rate, #samp_rate
+            "Secuencia Recibida", #name
+            1 #number of inputs
         )
         self.qtgui_time_sink_x_0.set_update_time(0.10)
         self.qtgui_time_sink_x_0.set_y_axis(-1, 1)
@@ -146,9 +154,9 @@ class mpsk_tranceptor(gr.top_block, Qt.QWidget):
         self._qtgui_time_sink_x_0_win = sip.wrapinstance(self.qtgui_time_sink_x_0.pyqwidget(), Qt.QWidget)
         self.qtgui_tab_widget_0_grid_layout_1.addWidget(self._qtgui_time_sink_x_0_win)
         self.qtgui_const_sink_x_1 = qtgui.const_sink_c(
-        	1024, #size
-        	"Decodificación", #name
-        	1 #number of inputs
+            1024, #size
+            "Decodificación", #name
+            1 #number of inputs
         )
         self.qtgui_const_sink_x_1.set_update_time(0.10)
         self.qtgui_const_sink_x_1.set_y_axis(-2, 2)
@@ -187,9 +195,9 @@ class mpsk_tranceptor(gr.top_block, Qt.QWidget):
         self._qtgui_const_sink_x_1_win = sip.wrapinstance(self.qtgui_const_sink_x_1.pyqwidget(), Qt.QWidget)
         self.qtgui_tab_widget_0_grid_layout_1.addWidget(self._qtgui_const_sink_x_1_win)
         self.qtgui_const_sink_x_0 = qtgui.const_sink_c(
-        	1024, #size
-        	"Codificación", #name
-        	1 #number of inputs
+            1024, #size
+            "Codificación", #name
+            1 #number of inputs
         )
         self.qtgui_const_sink_x_0.set_update_time(0.10)
         self.qtgui_const_sink_x_0.set_y_axis(-2, 2)
@@ -240,19 +248,21 @@ class mpsk_tranceptor(gr.top_block, Qt.QWidget):
           )
         self.digital_binary_slicer_fb_0 = digital.binary_slicer_fb()
         self.channels_channel_model_0 = channels.channel_model(
-        	noise_voltage=noise_volt,
-        	frequency_offset=0.0,
-        	epsilon=1.0,
-        	taps=(1.0 + 1.0j, ),
-        	noise_seed=0,
-        	block_tags=False
+            noise_voltage=noise_volt,
+            frequency_offset=0.0,
+            epsilon=1.0,
+            taps=(1.0 + 1.0j, ),
+            noise_seed=0,
+            block_tags=False
         )
         self.blocks_throttle_0 = blocks.throttle(gr.sizeof_char*1, samp_rate,True)
         self.blocks_stream_to_tagged_stream_0 = blocks.stream_to_tagged_stream(gr.sizeof_char, 1, packet_len, length_tag_key)
         self.blocks_repack_bits_bb_0 = blocks.repack_bits_bb(8, constellation.bits_per_symbol(), "packet_len", False, gr.GR_LSB_FIRST)
-        self.blocks_file_source_0 = blocks.file_source(gr.sizeof_char*1, '/home/abg/sdk/python/gnuradio-framework/workspace/mpsk_tranceptor/image_mpsk_tranceptor', False)
+        # '/home/abg/sdk/python/gnuradio-framework/workspace/mpsk_tranceptor/image_mpsk_tranceptor'
+        self.blocks_file_source_0 = blocks.file_source(gr.sizeof_char*1, data_sent, False)
         self.blocks_file_source_0.set_begin_tag(pmt.PMT_NIL)
-        self.blocks_file_sink_0 = blocks.file_sink(gr.sizeof_char*1, '/home/abg/sdk/python/gnuradio-framework/workspace/mpsk_tranceptor/raw_data', False)
+        # '/home/abg/sdk/python/gnuradio-framework/workspace/mpsk_tranceptor/raw_data'
+        self.blocks_file_sink_0 = blocks.file_sink(gr.sizeof_char*1, data_received, False)
         self.blocks_file_sink_0.set_unbuffered(True)
         self.blocks_char_to_float_0 = blocks.char_to_float(1, 1)
 
