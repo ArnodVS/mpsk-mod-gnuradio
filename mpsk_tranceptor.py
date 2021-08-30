@@ -258,10 +258,8 @@ class mpsk_tranceptor(gr.top_block, Qt.QWidget):
         self.blocks_throttle_0 = blocks.throttle(gr.sizeof_char*1, samp_rate,True)
         self.blocks_stream_to_tagged_stream_0 = blocks.stream_to_tagged_stream(gr.sizeof_char, 1, packet_len, length_tag_key)
         self.blocks_repack_bits_bb_0 = blocks.repack_bits_bb(8, constellation.bits_per_symbol(), "packet_len", False, gr.GR_LSB_FIRST)
-        # '/home/abg/sdk/python/gnuradio-framework/workspace/mpsk_tranceptor/image_mpsk_tranceptor'
         self.blocks_file_source_0 = blocks.file_source(gr.sizeof_char*1, data_sent, False)
         self.blocks_file_source_0.set_begin_tag(pmt.PMT_NIL)
-        # '/home/abg/sdk/python/gnuradio-framework/workspace/mpsk_tranceptor/raw_data'
         self.blocks_file_sink_0 = blocks.file_sink(gr.sizeof_char*1, data_received, False)
         self.blocks_file_sink_0.set_unbuffered(True)
         self.blocks_char_to_float_0 = blocks.char_to_float(1, 1)
