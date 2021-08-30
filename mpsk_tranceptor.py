@@ -4,7 +4,7 @@
 # GNU Radio Python Flow Graph
 # Title: Transptor MPSK
 # Author: Arnold VS
-# Generated: Sun Aug 29 20:05:22 2021
+# Generated: Sun Aug 29 20:24:39 2021
 ##################################################
 
 from distutils.version import StrictVersion
@@ -82,10 +82,25 @@ class mpsk_tranceptor(gr.top_block, Qt.QWidget):
         ##################################################
         # Blocks
         ##################################################
+        self.qtgui_tab_widget_0 = Qt.QTabWidget()
+        self.qtgui_tab_widget_0_widget_0 = Qt.QWidget()
+        self.qtgui_tab_widget_0_layout_0 = Qt.QBoxLayout(Qt.QBoxLayout.TopToBottom, self.qtgui_tab_widget_0_widget_0)
+        self.qtgui_tab_widget_0_grid_layout_0 = Qt.QGridLayout()
+        self.qtgui_tab_widget_0_layout_0.addLayout(self.qtgui_tab_widget_0_grid_layout_0)
+        self.qtgui_tab_widget_0.addTab(self.qtgui_tab_widget_0_widget_0, 'Transmisi\xc3\xb3n TX')
+        self.qtgui_tab_widget_0_widget_1 = Qt.QWidget()
+        self.qtgui_tab_widget_0_layout_1 = Qt.QBoxLayout(Qt.QBoxLayout.TopToBottom, self.qtgui_tab_widget_0_widget_1)
+        self.qtgui_tab_widget_0_grid_layout_1 = Qt.QGridLayout()
+        self.qtgui_tab_widget_0_layout_1.addLayout(self.qtgui_tab_widget_0_grid_layout_1)
+        self.qtgui_tab_widget_0.addTab(self.qtgui_tab_widget_0_widget_1, 'Recepci\xc3\xb3n RX')
+        self.top_grid_layout.addWidget(self.qtgui_tab_widget_0)
+        self._noise_volt_range = Range(0, 1, .01, .0001, 200)
+        self._noise_volt_win = RangeWidget(self._noise_volt_range, self.set_noise_volt, 'Channel: Noise Voltage', "counter_slider", float)
+        self.top_grid_layout.addWidget(self._noise_volt_win)
         self.qtgui_time_sink_x_0 = qtgui.time_sink_f(
         	1024, #size
         	samp_rate, #samp_rate
-        	"", #name
+        	"Secuencia Recibida", #name
         	1 #number of inputs
         )
         self.qtgui_time_sink_x_0.set_update_time(0.10)
@@ -129,7 +144,7 @@ class mpsk_tranceptor(gr.top_block, Qt.QWidget):
             self.qtgui_time_sink_x_0.set_line_alpha(i, alphas[i])
 
         self._qtgui_time_sink_x_0_win = sip.wrapinstance(self.qtgui_time_sink_x_0.pyqwidget(), Qt.QWidget)
-        self.top_grid_layout.addWidget(self._qtgui_time_sink_x_0_win)
+        self.qtgui_tab_widget_0_grid_layout_1.addWidget(self._qtgui_time_sink_x_0_win)
         self.qtgui_const_sink_x_1 = qtgui.const_sink_c(
         	1024, #size
         	"Decodificación", #name
@@ -170,7 +185,7 @@ class mpsk_tranceptor(gr.top_block, Qt.QWidget):
             self.qtgui_const_sink_x_1.set_line_alpha(i, alphas[i])
 
         self._qtgui_const_sink_x_1_win = sip.wrapinstance(self.qtgui_const_sink_x_1.pyqwidget(), Qt.QWidget)
-        self.top_grid_layout.addWidget(self._qtgui_const_sink_x_1_win)
+        self.qtgui_tab_widget_0_grid_layout_1.addWidget(self._qtgui_const_sink_x_1_win)
         self.qtgui_const_sink_x_0 = qtgui.const_sink_c(
         	1024, #size
         	"Codificación", #name
@@ -211,10 +226,7 @@ class mpsk_tranceptor(gr.top_block, Qt.QWidget):
             self.qtgui_const_sink_x_0.set_line_alpha(i, alphas[i])
 
         self._qtgui_const_sink_x_0_win = sip.wrapinstance(self.qtgui_const_sink_x_0.pyqwidget(), Qt.QWidget)
-        self.top_grid_layout.addWidget(self._qtgui_const_sink_x_0_win)
-        self._noise_volt_range = Range(0, 1, .01, .0001, 200)
-        self._noise_volt_win = RangeWidget(self._noise_volt_range, self.set_noise_volt, 'Channel: Noise Voltage', "counter_slider", float)
-        self.top_grid_layout.addWidget(self._noise_volt_win)
+        self.qtgui_tab_widget_0_grid_layout_0.addWidget(self._qtgui_const_sink_x_0_win)
         self.digital_pfb_clock_sync_xxx_0 = digital.pfb_clock_sync_ccf(sps, 6.28/100.0, (rrc_taps), nfilts, nfilts/2, 1.5, 1)
         self.digital_constellation_soft_decoder_cf_0 = digital.constellation_soft_decoder_cf(constellation)
         self.digital_constellation_modulator_0 = digital.generic_mod(
@@ -228,7 +240,7 @@ class mpsk_tranceptor(gr.top_block, Qt.QWidget):
           )
         self.digital_binary_slicer_fb_0 = digital.binary_slicer_fb()
         self.channels_channel_model_0 = channels.channel_model(
-        	noise_voltage=0.0,
+        	noise_voltage=noise_volt,
         	frequency_offset=0.0,
         	epsilon=1.0,
         	taps=(1.0 + 1.0j, ),
@@ -238,9 +250,9 @@ class mpsk_tranceptor(gr.top_block, Qt.QWidget):
         self.blocks_throttle_0 = blocks.throttle(gr.sizeof_char*1, samp_rate,True)
         self.blocks_stream_to_tagged_stream_0 = blocks.stream_to_tagged_stream(gr.sizeof_char, 1, packet_len, length_tag_key)
         self.blocks_repack_bits_bb_0 = blocks.repack_bits_bb(8, constellation.bits_per_symbol(), "packet_len", False, gr.GR_LSB_FIRST)
-        self.blocks_file_source_0 = blocks.file_source(gr.sizeof_char*1, '/home/abg/sdk/python/gnuradio-framework/proyects/mpsk_tranceptor/image_mpsk_tranceptor', False)
+        self.blocks_file_source_0 = blocks.file_source(gr.sizeof_char*1, '/home/abg/sdk/python/gnuradio-framework/workspace/mpsk_tranceptor/image_mpsk_tranceptor', False)
         self.blocks_file_source_0.set_begin_tag(pmt.PMT_NIL)
-        self.blocks_file_sink_0 = blocks.file_sink(gr.sizeof_char*1, '/home/abg/sdk/python/gnuradio-framework/proyects/mpsk_tranceptor/raw_data', False)
+        self.blocks_file_sink_0 = blocks.file_sink(gr.sizeof_char*1, '/home/abg/sdk/python/gnuradio-framework/workspace/mpsk_tranceptor/raw_data', False)
         self.blocks_file_sink_0.set_unbuffered(True)
         self.blocks_char_to_float_0 = blocks.char_to_float(1, 1)
 
@@ -310,6 +322,7 @@ class mpsk_tranceptor(gr.top_block, Qt.QWidget):
 
     def set_noise_volt(self, noise_volt):
         self.noise_volt = noise_volt
+        self.channels_channel_model_0.set_noise_voltage(self.noise_volt)
 
     def get_length_tag_key(self):
         return self.length_tag_key
