@@ -84,7 +84,7 @@ class mpsk_tranceptor(gr.top_block, Qt.QWidget):
         
         # Se agrege el path para la ruta actual, importar os
         self.path = path = os.getcwd()
-        self.data_sent = data_sent = path + '/data_sent'
+        self.data_sent = data_sent = path + '/data_sent.png'
         self.data_received = data_received = path + '/data_received'
 
         ##################################################
